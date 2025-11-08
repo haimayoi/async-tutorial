@@ -39,19 +39,16 @@ namespace RayWenderlich.WenderlichTopia
         public GameObject constructionTilePrefab;
         public UiManager uiManager;
         public Transform levelGeometryContainer;
-        
-        private void Start()
-        {
-            
-        }
 
         public async void BuildStructure(GameObject placementStructure, Vector3 buildPosition)
         {
+            var cancellationToken = cancellationTokenSource.Token;
+
             if (placementStructure.TryGetComponent(out RoadBuildPropertiesContainer roadBuildPropertiesContainer))
             {
                 Destroy(placementStructure);
                 var roadProperties = roadBuildPropertiesContainer.roadBuildProperties;
-                var buildRoadTask = BuildRoadAsync(roadProperties, buildPosition);
+                var buildRoadTask = BuildRoadAsync(roadProperties, buildPosition, cancellationToken);
                 await buildRoadTask;
                 uiManager.NewStructureComplete(roadProperties.roadCost, buildPosition);
             }
@@ -59,36 +56,68 @@ namespace RayWenderlich.WenderlichTopia
             {
                 Destroy(placementStructure); 
                 var houseProperties = houseBuildPropertiesContainer.houseBuildProperties;
-                var buildHouseTask = BuildHouseAsync(houseProperties, buildPosition);
+                var buildHouseTask = BuildHouseAsync(houseProperties, buildPosition, cancellationToken);
                 await buildHouseTask;
                 var houseCost = buildHouseTask.Result;
                 uiManager.NewStructureComplete(houseCost, buildPosition);
             }
         }
 
-        private async Task BuildRoadAsync(RoadBuildProperties roadProperties, Vector3 buildPosition)
+        private async Task BuildRoadAsync(RoadBuildProperties roadProperties, Vector3 buildPosition, CancellationToken cancellationToken)
         {
             var constructionTile = Instantiate(constructionTilePrefab, buildPosition, Quaternion.identity, levelGeometryContainer);
             Destroy(constructionTile);
             Instantiate(roadProperties.completedRoadPrefab, buildPosition, Quaternion.identity, levelGeometryContainer);
-            await Task.Delay(2500);
+            await Task.Delay(2500, cancellationToken);
         }
 
-        private async Task<int> BuildHouseAsync(HouseBuildProperties houseBuildProperties, Vector3 buildPosition)
+        private async Task<int> BuildHouseAsync(HouseBuildProperties houseBuildProperties, Vector3 buildPosition, CancellationToken cancellationToken)
         {
             var constructionTile = Instantiate(constructionTilePrefab, buildPosition, Quaternion.identity, levelGeometryContainer);
+            Task<int> buildFrame = BuildHousePartAsync(houseBuildProperties, houseBuildProperties.completedFramePrefab, buildPosition,cancellationToken);
+            await buildFrame;
+            Task<int> buildRoof = BuildHousePartAsync(houseBuildProperties, houseBuildProperties.completedRoofPrefab, buildPosition, cancellationToken);
+            Task<int> buildFence = BuildHousePartAsync(houseBuildProperties, houseBuildProperties.completedFencePrefab, buildPosition, cancellationToken);
+            await Task.WhenAll(buildRoof, buildFence);
+            Task<int> finalizeHouse = BuildHousePartAsync(houseBuildProperties, houseBuildProperties.completedHousePrefab, buildPosition, cancellationToken);
+            await finalizeHouse;
+            Destroy(constructionTile);
+            var totalHouseCost = buildFrame.Result + buildRoof.Result + buildFence.Result + finalizeHouse.Result;
+            return totalHouseCost;
 
-            return 100;
         }
+
+        private async Task<int> BuildHousePartAsync(HouseBuildProperties houseBuildProperties, GameObject housePartPrefab, Vector3 buildPosition, CancellationToken cancellationToken)
+        {
+            var constructionTime = houseBuildProperties.GetConstructionTime();
+            await Task.Delay(constructionTime, cancellationToken);
+            Instantiate(housePartPrefab, buildPosition, Quaternion.identity, levelGeometryContainer);
+            var taskCost = constructionTime * houseBuildProperties.wage;
+            return taskCost;
+
+        }
+
+        private CancellationTokenSource cancellationTokenSource;
+
+        private void Start()
+        {
+            cancellationTokenSource = new CancellationTokenSource();
+        }
+
 
         private void Update()
         {
-            
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                cancellationTokenSource.Cancel();
+                cancellationTokenSource.Dispose();
+                cancellationTokenSource = new CancellationTokenSource();
+            }
         }
 
         private void OnDisable()
         {
-
+            cancellationTokenSource.Cancel();
         }
     }
 }
