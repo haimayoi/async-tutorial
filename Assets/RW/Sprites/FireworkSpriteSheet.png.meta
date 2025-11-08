@@ -93,7 +93,7 @@ TextureImporter:
       213: -4687394888596467198
     second: FireworkSpriteSheet_29
   externalObjects: {}
-  serializedVersion: 11
+  serializedVersion: 12
   mipmaps:
     mipMapMode: 0
     enableMipMap: 0
@@ -114,6 +114,7 @@ TextureImporter:
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
+  ignoreMasterTextureLimit: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -152,6 +153,7 @@ TextureImporter:
   textureFormatSet: 0
   ignorePngGamma: 0
   applyGammaDecoding: 0
+  cookieLightType: 1
   platformSettings:
   - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
@@ -179,6 +181,18 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
     buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: iPhone
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
@@ -832,6 +846,37 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
+    nameFileIdTable:
+      FireworkSpriteSheet_0: 5082178236231529727
+      FireworkSpriteSheet_1: 2590784427595545829
+      FireworkSpriteSheet_10: 4548291524799050089
+      FireworkSpriteSheet_11: -6447900860897575873
+      FireworkSpriteSheet_12: -429239648316658330
+      FireworkSpriteSheet_13: -7905761031427488797
+      FireworkSpriteSheet_14: -4060990905410250482
+      FireworkSpriteSheet_15: 4703595023331450452
+      FireworkSpriteSheet_16: 5485097011176058157
+      FireworkSpriteSheet_17: 4385876311718052827
+      FireworkSpriteSheet_18: -2677311729577639700
+      FireworkSpriteSheet_19: -9213875299910675084
+      FireworkSpriteSheet_2: -9101150322122439416
+      FireworkSpriteSheet_20: -2224123709856416587
+      FireworkSpriteSheet_21: 4461795579646196750
+      FireworkSpriteSheet_22: 8511705177874023054
+      FireworkSpriteSheet_23: -8882622990175253003
+      FireworkSpriteSheet_24: 5967405501090784855
+      FireworkSpriteSheet_25: -2729264168759953757
+      FireworkSpriteSheet_26: 1717443943469328792
+      FireworkSpriteSheet_27: 8858413179508625435
+      FireworkSpriteSheet_28: -9113822383585815929
+      FireworkSpriteSheet_29: -4687394888596467198
+      FireworkSpriteSheet_3: 9088304368760089863
+      FireworkSpriteSheet_4: 2634112791394343169
+      FireworkSpriteSheet_5: 2750317804444125082
+      FireworkSpriteSheet_6: -3821582087156829546
+      FireworkSpriteSheet_7: 7169935366281524406
+      FireworkSpriteSheet_8: -1003516145343558004
+      FireworkSpriteSheet_9: -8801090153387559520
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

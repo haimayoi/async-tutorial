@@ -45,7 +45,7 @@ namespace RayWenderlich.WenderlichTopia
             
         }
 
-        public void BuildStructure(GameObject placementStructure, Vector3 buildPosition)
+        public async void BuildStructure(GameObject placementStructure, Vector3 buildPosition)
         {
             if (placementStructure.TryGetComponent(out RoadBuildPropertiesContainer roadBuildPropertiesContainer))
             {
@@ -61,6 +61,11 @@ namespace RayWenderlich.WenderlichTopia
             }
         }
 
+        private async Task BuildRoadAsync(RoadBuildProperties roadProperties, Vector3 buildPosition)
+        {
+
+        }
+        
         private void Update()
         {
             
