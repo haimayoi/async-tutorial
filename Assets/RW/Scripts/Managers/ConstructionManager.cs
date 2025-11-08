@@ -49,39 +49,70 @@ namespace RayWenderlich.WenderlichTopia
                 Destroy(placementStructure);
                 var roadProperties = roadBuildPropertiesContainer.roadBuildProperties;
                 var buildRoadTask = BuildRoadAsync(roadProperties, buildPosition, cancellationToken);
-                await buildRoadTask;
-                uiManager.NewStructureComplete(roadProperties.roadCost, buildPosition);
+                
+                try
+                {
+                    await buildRoadTask;
+                    uiManager.NewStructureComplete(roadProperties.roadCost, buildPosition);
+                }
+                catch
+                {
+                    Debug.LogWarning("Building House Cancelled");
+                }
             }
             else if (placementStructure.TryGetComponent(out HouseBuildPropertiesContainer houseBuildPropertiesContainer))
             {
                 Destroy(placementStructure); 
                 var houseProperties = houseBuildPropertiesContainer.houseBuildProperties;
                 var buildHouseTask = BuildHouseAsync(houseProperties, buildPosition, cancellationToken);
-                await buildHouseTask;
-                var houseCost = buildHouseTask.Result;
-                uiManager.NewStructureComplete(houseCost, buildPosition);
+                
+                try 
+                {
+                    await buildHouseTask;
+                    var houseCost = buildHouseTask.Result;
+                    uiManager.NewStructureComplete(houseCost, buildPosition);
+                }
+                catch 
+                {
+                    Debug.LogWarning("Building House Cancelled");
+                }
             }
         }
 
         private async Task BuildRoadAsync(RoadBuildProperties roadProperties, Vector3 buildPosition, CancellationToken cancellationToken)
         {
             var constructionTile = Instantiate(constructionTilePrefab, buildPosition, Quaternion.identity, levelGeometryContainer);
+            
+            try 
+            {
+                await Task.Delay(2500, cancellationToken);
+            }
+            catch 
+            {
+                Destroy(constructionTile);
+                throw;
+            }
+
             Destroy(constructionTile);
             Instantiate(roadProperties.completedRoadPrefab, buildPosition, Quaternion.identity, levelGeometryContainer);
-            await Task.Delay(2500, cancellationToken);
         }
 
         private async Task<int> BuildHouseAsync(HouseBuildProperties houseBuildProperties, Vector3 buildPosition, CancellationToken cancellationToken)
         {
             var constructionTile = Instantiate(constructionTilePrefab, buildPosition, Quaternion.identity, levelGeometryContainer);
+            
             Task<int> buildFrame = BuildHousePartAsync(houseBuildProperties, houseBuildProperties.completedFramePrefab, buildPosition,cancellationToken);
             await buildFrame;
+            
             Task<int> buildRoof = BuildHousePartAsync(houseBuildProperties, houseBuildProperties.completedRoofPrefab, buildPosition, cancellationToken);
             Task<int> buildFence = BuildHousePartAsync(houseBuildProperties, houseBuildProperties.completedFencePrefab, buildPosition, cancellationToken);
             await Task.WhenAll(buildRoof, buildFence);
+            
             Task<int> finalizeHouse = BuildHousePartAsync(houseBuildProperties, houseBuildProperties.completedHousePrefab, buildPosition, cancellationToken);
             await finalizeHouse;
+            
             Destroy(constructionTile);
+            
             var totalHouseCost = buildFrame.Result + buildRoof.Result + buildFence.Result + finalizeHouse.Result;
             return totalHouseCost;
 
@@ -90,7 +121,15 @@ namespace RayWenderlich.WenderlichTopia
         private async Task<int> BuildHousePartAsync(HouseBuildProperties houseBuildProperties, GameObject housePartPrefab, Vector3 buildPosition, CancellationToken cancellationToken)
         {
             var constructionTime = houseBuildProperties.GetConstructionTime();
-            await Task.Delay(constructionTime, cancellationToken);
+            try
+            {
+                await Task.Delay(constructionTime, cancellationToken);
+            }
+            catch 
+            {
+                return 0;
+            }
+            
             Instantiate(housePartPrefab, buildPosition, Quaternion.identity, levelGeometryContainer);
             var taskCost = constructionTime * houseBuildProperties.wage;
             return taskCost;
